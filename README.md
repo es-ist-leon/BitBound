@@ -2,6 +2,8 @@
 
 > Hardware abstraction for MicroPython that makes embedded development as simple as working with modern web APIs.
 
+[![PyPI version](https://badge.fury.io/py/bitbound.svg)](https://pypi.org/project/bitbound/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/bitbound.svg)](https://pypi.org/project/bitbound/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![MicroPython](https://img.shields.io/badge/MicroPython-compatible-green.svg)](https://micropython.org/)
@@ -44,10 +46,18 @@ hardware.run()
 
 ## 📦 Installation
 
-### Standard Python (for development/simulation)
+### From PyPI (Recommended)
 
 ```bash
 pip install bitbound
+```
+
+### From Source
+
+```bash
+git clone https://github.com/bitbound/bitbound.git
+cd bitbound
+pip install -e .
 ```
 
 ### MicroPython
@@ -55,7 +65,13 @@ pip install bitbound
 Copy the `bitbound` folder to your device's filesystem:
 
 ```bash
+# Using mpremote
 mpremote cp -r bitbound :
+
+# Or using ampy
+ampy -p /dev/ttyUSB0 put bitbound
+
+# Or using Thonny IDE - just copy the bitbound folder to your device
 ```
 
 ## 🚀 Quick Start
@@ -324,16 +340,55 @@ bitbound/
     └── displays/        # Display implementations
 ```
 
+## 🛠️ Supported Hardware
+
+### Microcontrollers
+- **ESP32** / ESP32-S2 / ESP32-S3 / ESP32-C3
+- **Raspberry Pi Pico** (RP2040)
+- **ESP8266** (limited memory)
+- **STM32** with MicroPython
+- Any board running **MicroPython** or **CircuitPython**
+
+### Development/Simulation
+- **Windows**, **macOS**, **Linux** with Python 3.7+
+- Full simulation mode for development without hardware
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Setup
+
+```bash
+git clone https://github.com/bitbound/bitbound.git
+cd bitbound
+pip install -e ".[dev]"
+pytest tests/
+```
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## 🔗 Links
+
+- **PyPI:** https://pypi.org/project/bitbound/
+- **Documentation:** https://bitbound.readthedocs.io/
+- **GitHub:** https://github.com/bitbound/bitbound
+- **Issues:** https://github.com/bitbound/bitbound/issues
 
 ## 🙏 Acknowledgments
 
 - Inspired by modern web frameworks and their declarative approaches
 - Built on top of the excellent MicroPython/CircuitPython ecosystems
 - Thanks to all the open-source hardware driver contributors
+
+---
+
+**Made with ❤️ for the Maker community**
