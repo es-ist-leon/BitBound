@@ -12,7 +12,7 @@ Example:
     sensor.on_threshold("temperature > 25°C", trigger_fan)
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 __author__ = "BitBound Team"
 
 from .hardware import Hardware
@@ -20,13 +20,19 @@ from .device import Device
 from .event import Event, EventLoop
 from .expression import Expression
 from .units import Unit, parse_value
+from .config import Config
+from .power import PowerManager
+from .ota import OTAManager
 
 __all__ = [
     "Hardware",
-    "Device", 
+    "Device",
     "Event",
     "EventLoop",
     "Expression",
     "Unit",
     "parse_value",
+    "Config",
+    "PowerManager",
+    "OTAManager",
 ]
