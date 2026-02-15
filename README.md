@@ -43,6 +43,13 @@ hardware.run()
 - **Simulation Mode**: Develop and test without physical hardware
 - **Wide Device Support**: Sensors, actuators, displays
 - **Cross-Platform**: Works on MicroPython, CircuitPython, and standard Python
+- **Networking**: WiFi, MQTT, HTTP Client/Server, WebSocket
+- **Data Logging**: CSV/JSON/JSONL logging, ring buffers, persistent storage
+- **Configuration Management**: Board profiles, dot-notation config, project templates
+- **Async Support**: Async device readings, event loops, gather_readings
+- **Power Management**: Deep/light sleep, watchdog, battery monitoring
+- **OTA Updates**: Version checking, firmware updates, rollback support
+- **CLI Tool**: `bitbound` command for scanning, init, config, monitor, deploy
 
 ## 📦 Installation
 
@@ -317,6 +324,188 @@ Supported units:
 - Light: lux, lx
 - Frequency: Hz, kHz, MHz
 
+## 🌐 Networking
+
+### WiFi Management
+
+```python
+from bitbound.network import WiFiManager
+
+wifi = WiFiManager()
+wifi.connect("MyNetwork", "password123")
+
+# Scan for networks
+networks = wifi.scan()
+for net in networks:
+    print(f"{net['ssid']} ({net['rssi']} dBm)")
+
+# AP mode
+wifi.start_ap("BitBound-AP", "ap-password")
+```
+
+### MQTT
+
+```python
+from bitbound.network import MQTTClient
+
+mqtt = MQTTClient("my-device", broker="mqtt.example.com")
+mqtt.connect()
+
+# Publish sensor data
+mqtt.publish("sensors/temp", '{"value": 23.5}')
+
+# Subscribe to commands
+mqtt.subscribe("commands/#", callback=lambda topic, msg: print(f"{topic}: {msg}"))
+```
+
+### HTTP Client & Server
+
+```python
+from bitbound.network import HTTPClient, HTTPServer
+
+# Client
+http = HTTPClient()
+response = http.get("http://api.example.com/data")
+print(response.json())
+
+http.post("http://api.example.com/data", json_data={"temp": 23.5})
+
+# Server
+server = HTTPServer(port=80)
+
+@server.route("/api/temperature")
+def get_temp(request):
+    return {"temperature": 23.5}
+
+server.start()
+```
+
+### WebSocket
+
+```python
+from bitbound.network import WebSocketClient
+
+ws = WebSocketClient("ws://server.local/ws")
+ws.on_message(lambda msg: print(f"Received: {msg}"))
+ws.connect()
+ws.send({"temperature": 23.5})
+```
+
+## 📊 Data Logging
+
+```python
+from bitbound.logging import DataLogger, RingBuffer, Storage
+
+# CSV/JSON data logging with rotation
+logger = DataLogger("sensor_data", format="csv", max_entries=1000)
+logger.log({"temperature": 23.5, "humidity": 65.0})
+
+# Ring buffer for memory-constrained devices
+buffer = RingBuffer(100)
+buffer.append(23.5)
+print(f"Average: {buffer.average()}, Min: {buffer.min()}, Max: {buffer.max()}")
+
+# Persistent key-value storage
+storage = Storage()
+storage.set("wifi_ssid", "MyNetwork")
+print(storage.get("wifi_ssid"))
+```
+
+## ⚙️ Configuration Management
+
+```python
+from bitbound import Config
+
+# Load config with board profiles
+config = Config(board="esp32")
+
+# Dot-notation access
+config.set("mqtt.broker", "mqtt.example.com")
+config.set("mqtt.port", 1883)
+print(config.get("mqtt.broker"))
+
+# Board-specific pin mappings included
+print(config.get("pins.i2c_sda"))  # Board-specific default
+```
+
+Available board profiles: `esp32`, `esp32s3`, `esp32c3`, `esp8266`, `rpi_pico`, `rpi_pico_w`
+
+## ⚡ Async Support
+
+```python
+from bitbound.async_support import AsyncDevice, gather_readings
+
+# Async device readings
+async_sensor = AsyncDevice(sensor)
+temp = await async_sensor.read("temperature")
+
+# Gather multiple readings concurrently
+results = await gather_readings([sensor1, sensor2, sensor3], "temperature")
+```
+
+## 🔋 Power Management
+
+```python
+from bitbound import PowerManager
+
+pm = PowerManager()
+
+# Deep sleep with timed wake
+pm.deep_sleep(duration_ms=60000)
+
+# Light sleep
+pm.light_sleep(duration_ms=5000)
+
+# Battery monitoring
+level = pm.battery_level()
+print(f"Battery: {level}%")
+
+# Watchdog timer
+pm.watchdog_enable(timeout_ms=8000)
+pm.watchdog_feed()
+```
+
+## 🔄 OTA Updates
+
+```python
+from bitbound.ota import OTAManager
+
+ota = OTAManager(
+    update_url="https://api.example.com/firmware",
+    current_version="1.0.0"
+)
+
+# Check for updates
+if ota.check_update():
+    print(f"New version: {ota.available_version}")
+    ota.update()
+
+# Rollback support
+ota.rollback()
+```
+
+## 🖥️ CLI Tool
+
+```bash
+# Install with CLI support
+pip install bitbound
+
+# Initialize a new project
+bitbound init my-project --board esp32
+
+# List supported boards
+bitbound boards
+
+# Scan for connected devices
+bitbound scan
+
+# Monitor device readings
+bitbound monitor --port COM3
+
+# Deploy to device
+bitbound deploy --port COM3
+```
+
 ## 📁 Project Structure
 
 ```
@@ -327,6 +516,11 @@ bitbound/
 ├── event.py             # Event system
 ├── expression.py        # Expression parser
 ├── units.py             # Unit handling
+├── config.py            # Configuration management
+├── power.py             # Power management
+├── ota.py               # OTA update manager
+├── async_support.py     # Async device support
+├── cli.py               # CLI tool
 ├── buses/
 │   ├── base.py          # Bus abstraction
 │   ├── i2c.py           # I2C implementation
@@ -334,10 +528,19 @@ bitbound/
 │   ├── gpio.py          # GPIO implementation
 │   ├── uart.py          # UART implementation
 │   └── onewire.py       # OneWire implementation
-└── devices/
-    ├── sensors/         # Sensor implementations
-    ├── actuators/       # Actuator implementations
-    └── displays/        # Display implementations
+├── devices/
+│   ├── sensors/         # Sensor implementations
+│   ├── actuators/       # Actuator implementations
+│   └── displays/        # Display implementations
+├── network/
+│   ├── wifi.py          # WiFi management
+│   ├── mqtt.py          # MQTT client
+│   ├── http.py          # HTTP client/server
+│   └── websocket.py     # WebSocket client
+└── logging/
+    ├── datalogger.py    # Data logging (CSV/JSON/JSONL)
+    ├── storage.py       # Persistent storage
+    └── ringbuffer.py    # Memory-efficient ring buffer
 ```
 
 ## 🛠️ Supported Hardware

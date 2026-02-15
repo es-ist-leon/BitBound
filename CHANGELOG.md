@@ -5,6 +5,63 @@ All notable changes to BitBound will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-02-15
+
+### Added
+- **Networking & Connectivity**
+  - WiFiManager: connect, scan, AP mode, status callbacks, auto-reconnect
+  - MQTTClient: publish/subscribe, topic wildcards, QoS, simulation mode
+  - HTTPClient: multi-backend (urequests/requests/urllib/simulation), GET/POST/PUT/DELETE
+  - HTTPServer: route decorator, threaded socket server, JSON/HTML responses
+  - WebSocketClient: real-time communication, event callbacks, simulation mode
+
+- **Data Logging & Persistence**
+  - DataLogger: CSV/JSON/JSONL formats, log rotation, device-aware logging
+  - Storage/FileStorage: persistent key-value store, text/binary file operations
+  - RingBuffer: memory-efficient circular buffer with statistics (avg, min, max)
+
+- **Configuration Management**
+  - Config manager with dot-notation access
+  - Board profiles: esp32, esp32s3, esp32c3, esp8266, rpi_pico, rpi_pico_w
+  - Default pin mappings per board, save/load to JSON
+
+- **Async Support**
+  - AsyncEventLoop for cooperative multitasking
+  - AsyncDevice wrapper for async sensor readings
+  - gather_readings() for concurrent multi-device reads
+
+- **Power Management**
+  - Deep sleep / light sleep with timed wake
+  - Watchdog timer (enable, feed, disable)
+  - Battery level monitoring
+  - CPU frequency scaling
+  - Simulation mode for desktop development
+
+- **OTA Updates**
+  - OTAManager: check for updates, download, verify, install
+  - Automatic backup and rollback support
+  - Version comparison utilities
+  - Status callbacks for progress tracking
+
+- **CLI Tool** (`bitbound` command)
+  - `bitbound init <project> --board <board>`: Initialize project with template
+  - `bitbound scan`: Scan for connected devices
+  - `bitbound config`: View/set configuration
+  - `bitbound monitor`: Monitor device readings
+  - `bitbound deploy`: Deploy code to device
+  - `bitbound boards`: List supported boards
+  - `bitbound info`: Show environment information
+
+- **Comprehensive Test Suite**
+  - 291 tests covering all modules
+  - Tests for networking, logging, config, async, power, OTA, CLI
+  - Tests for all bus implementations and device types
+
+### Changed
+- Version bumped from 0.1.0 to 1.0.0
+- Updated pyproject.toml with CLI entry point, optional dependency groups
+- Added pytest-asyncio support for async tests
+
 ## [0.1.0] - 2026-01-24
 
 ### Added
